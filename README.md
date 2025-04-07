@@ -1,6 +1,6 @@
 # BasePool
 
-BasePool is a provably fair pool game built on Base network using Coinbase's MiniKit for Farcaster integration. Players can participate by sending ETH to get assigned random numbers, with the chance to win the entire pool when it reaches 0.5 ETH.
+BasePool is a provably fair pool game built on Base network using Coinbase's MiniKit for Farcaster integration. Players can participate by sending ETH to get assigned numbers, with the chance to win the pool when it reaches 0.5 ETH.
 
 ![BasePool Screenshot](https://basepool.miniapps.zone/gitHub.png)
 ![BasePool Screenshot](https://basepool.miniapps.zone/miniApp.png)
@@ -52,8 +52,19 @@ yarn install
 cp .env.example .env
 ```
 Fill in your environment variables:
-- NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID
-- NEXT_PUBLIC_ALCHEMY_API_KEY
+- NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME
+- NEXT_PUBLIC_ONCHAINKIT_API_KEY=
+- NEXT_PUBLIC_SPLASH_IMAGE_URL
+- NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR
+- NEXT_PUBLIC_IMAGE_URL
+- NEXT_PUBLIC_ICON_URL
+- NEXT_PUBLIC_VERSION=next
+- REDIS_URL=
+- REDIS_TOKEN=
+- FARCASTER_HEADER
+- FARCASTER_PAYLOAD
+- FARCASTER_SIGNATURE
+- NEXT_PUBLIC_URL
 
 4. Run the development server
 ```bash
