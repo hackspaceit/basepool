@@ -81,7 +81,7 @@ type PillButtonProps = {
 
 function PillButton({ numbers, eth, onClick }: PillButtonProps) {
   return (
-    <button
+        <button
       onClick={onClick}
       className="w-full px-4 py-2 border border-[#0052FF] rounded-full bg-white hover:bg-gray-50 transition-colors text-center group [font-family:ProtoMono]"
     >
@@ -104,7 +104,7 @@ export default function BasePool() {
       setIsWarningOpen(true);
       return;
     }
-    
+
     try {
       const hash = await walletClient.sendTransaction({
         to: CONTRACT_ADDRESS,
@@ -165,8 +165,8 @@ export default function BasePool() {
             />
             <PillButton 
               numbers="3 Numbers"
-              eth="0.00015 ETH"
-              onClick={() => handleTransaction("0.00015")}
+              eth="0.0015 ETH"
+              onClick={() => handleTransaction("0.0015")}
             />
             <PillButton 
               numbers="5 Numbers"
