@@ -18,12 +18,14 @@ import {
   Address,
   Avatar,
 } from "@coinbase/onchainkit/identity";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { parseEther } from "viem";
 import "./basepool.css";
 import { CONTRACT_ADDRESS } from "../lib/contract";
 import PoolModal from './PoolModal';
 import WarningModal from './WarningModal';
+import TransactionModal from './TransactionModal';
+import sdk from '@farcaster/frame-sdk';
 
 type ControlButtonProps = {
   className?: string;
@@ -94,69 +96,117 @@ function PillButton({ numbers, eth, onClick }: PillButtonProps) {
 export default function BasePool() {
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const publicClient = usePublicClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+  const [transactionHash, setTransactionHash] = useState<`0x${string}` | undefined>();
+  const [transactionAmount, setTransactionAmount] = useState<string | undefined>();
   const notification = useNotification();
 
   const handleTransaction = async (amount: string) => {
-    if (!walletClient || !address || !publicClient) {
+    if (!walletClient) {
       setIsWarningOpen(true);
       return;
     }
 
     try {
-      const hash = await walletClient.sendTransaction({
+      // Verificar si estamos en la red Base (chainId: 8453)
+      const chainId = await walletClient.getChainId();
+      if (chainId !== 8453) {
+        // Solicitar cambio a Base
+        try {
+          await walletClient.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x2105' }], // 8453 en hexadecimal
+          });
+          return; // La transacción se reiniciará cuando la red cambie
+        } catch (switchError) {
+          console.error('Error switching to Base:', switchError);
+          return;
+        }
+      }
+
+      // Primero intentamos enviar la transacción
+      const tx = await walletClient.sendTransaction({
         to: CONTRACT_ADDRESS,
         value: parseEther(amount),
       });
 
-      const receipt = await publicClient.waitForTransactionReceipt({ hash });
-      console.log('Transaction successful:', receipt);
+      // Solo si la transacción fue enviada exitosamente, actualizamos el estado
+      setTransactionAmount(amount);
+      setTransactionHash(tx);
+      setIsTransactionModalOpen(true);
 
-      // Share to Farcaster
-      await notification({
-        title: "BasePool Participation",
-        body: `I just participated in BasePool and sent ${amount} ETH to join the pool! 🎲\n\nhttps://basepool.miniapps.zone`
-      });
-
+      if (tx) {
+        const numberOfTickets = Number(amount) / 0.0005;
+        
+        setTimeout(() => {
+          notification({
+            title: "🎲 BasePool Participation",
+            body: `Just acquired ${numberOfTickets} numbers in BasePool with ${amount} ETH!\n\n💰 Pool: 0.5 ETH\n🎯 Target: ${(Number(amount) / 0.5 * 100).toFixed(1)}% filled\n\nJoin the pool! 👇\nhttps://basepool.miniapps.zone`
+          }).catch(console.error);
+        }, 1000);
+      }
     } catch (error) {
-      console.error('Transaction failed:', error);
+      console.error('Transaction error:', error);
+      // No abrimos el modal si hay un error en la transacción
+    }
+  };
+
+  const handleCloseTransactionModal = () => {
+    setIsTransactionModalOpen(false);
+    setTransactionHash(undefined);
+    setTransactionAmount(undefined);
+  };
+
+  const handleShare = async () => {
+    try {
+      const text = "🔵 Base Pool, a provable fair pool game 🔵\nFor each 0.0005 eth sent you receive 1 number, when the contract balance reaches 0.5 ETH /pyth generates a random number (0–999) and the balance is sent to the lucky number.\n\nParticipate now! 👇";
+      const linkUrl = "https://basepool.miniapps.zone";
+
+      await sdk.actions.openUrl(
+        `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(linkUrl)}`
+      );
+    } catch (error) {
+      console.error('Error sharing to Warpcast:', error);
     }
   };
 
   return (
     <div className="mt-1 mx-2 w-full h-full">
-      <div className="relative origin-top-left w-[96%] h-[70vh] bg-[#0052FF] p-[10px] rounded-lg">
+      <div className="relative origin-top-left w-[96%] h-[72vh] bg-[#0052FF] p-[10px] rounded-lg">
         <div className="absolute top-[10px] left-[10px] right-[10px] bottom-[10px] w-[calc(100%-20px)] h-[calc(100%-20px)] bg-white rounded-lg z-4 px-3 pt-2 pb-3">
           <div className="text-center mb-3">
             <h1 className="text-[#0052FF] text-4xl mb-1 [font-family:ProtoMono] leading-tight">
               BasePool
             </h1>
             <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight">
-              A provable fair Pool on Base
+            A provable fair pool game.
             </h2>
           </div>
 
           <div className="text-[#0A0B0D] text-base [font-family:ProtoMono] leading-snug mb-4">
             <p className="flex items-start mb-2">
               <span className="mr-2">🔵</span>
-              <span>For each 0.0005 ETH sent to the contract get assigned a number.</span>
+              <span>For each 0.0005 ETH sent you receive 1 number.</span>
             </p>
             <p className="flex items-start mb-2">
               <span className="mr-2">🔵</span>
-              <span>When the contract balance hits 0.5 ETH the next tx triggers a random draw using Pyth Network</span>
+              <span>At 0.5 balance, Pyth Network generates a random number (0–999)</span>
             </p>
             <p className="flex items-start mb-2">
               <span className="mr-2">🔵</span>
-              <span>Selected number receives the balance on the contract.</span>
+              <span>Selected number receives the contract balance.</span>
             </p>
             <p className="flex items-start">
               <span className="mr-2">🔵</span>
               <span>A new pool starts!</span>
             </p>
           </div>
-
+          <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight text-center">
+          👇🏻 Send ETH 👇🏻
+            </h2>
+          &nbsp; 
           <div className="grid grid-cols-2 gap-2 max-w-xl mx-auto px-2">
             <PillButton 
               numbers="1 Number"
@@ -182,13 +232,9 @@ export default function BasePool() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-x-4 mt-6">
+      <div className="grid grid-cols-3 gap-x-4 mt-3">
         <div className="flex justify-center">
-          <img 
-            src="/baseBlue.png" 
-            alt="Base Logo" 
-            className="w-14 h-14si"
-          />
+          <ControlButton onClick={() => handleShare()} className="block" />
         </div>
         <div className="flex justify-center">
           <ControlButton onClick={() => setIsModalOpen(true)} className="block" />
@@ -198,7 +244,7 @@ export default function BasePool() {
         </div>
 
         <div className="flex justify-center pt-4">
-          {/* Primera columna vacía */}
+          <span className="text-sm [font-family:ProtoMono] text-[#0052FF]">Share</span>
         </div>
         <div className="flex justify-center pt-4">
           <span className="text-sm [font-family:ProtoMono] text-[#0052FF]">Pool Status</span>
@@ -208,15 +254,23 @@ export default function BasePool() {
             {address ? "Logout" : "Login"}
           </span>
         </div>
+        
       </div>
 
       <PoolModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={() => setIsModalOpen(false)}
       />
       <WarningModal
         isOpen={isWarningOpen}
         onClose={() => setIsWarningOpen(false)}
+      />
+      <TransactionModal
+        isOpen={isTransactionModalOpen}
+        onClose={handleCloseTransactionModal}
+        hash={transactionHash}
+        amount={transactionAmount}
+        address={address}
       />
     </div>
   );

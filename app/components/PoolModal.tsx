@@ -1,6 +1,6 @@
 import React from 'react';
 import { useContractRead } from 'wagmi';
-import { CONTRACT_ADDRESS, CONTRACT_ABI, type PoolStatus } from '../lib/contract';
+import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../lib/contract';
 import { formatEther } from 'viem';
 
 type PoolModalProps = {
@@ -9,16 +9,22 @@ type PoolModalProps = {
 };
 
 export default function PoolModal({ isOpen, onClose }: PoolModalProps) {
-  const { data: poolStatus, isLoading } = useContractRead({
+  const { data, isLoading, error } = useContractRead({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
-    functionName: 'getPoolStatus',
-  }) as { data: PoolStatus | undefined; isLoading: boolean };
+    functionName: 'getPoolStatus'
+  });
+
+  const { data: conqueredNumbers } = useContractRead({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: 'getAllConqueredNumbers'
+  });
 
   if (!isOpen) return null;
 
-  const currentBalance = poolStatus?.currentBalance ? Number(formatEther(poolStatus.currentBalance)) : 0;
-  const threshold = poolStatus?.threshold ? Number(formatEther(poolStatus.threshold)) : 0.5;
+  const currentBalance = data?.[2] ? Number(formatEther(data[2])) : 0;
+  const threshold = data?.[3] ? Number(formatEther(data[3])) : 0.5;
   const progress = (currentBalance / threshold) * 100;
 
   return (
@@ -37,6 +43,10 @@ export default function PoolModal({ isOpen, onClose }: PoolModalProps) {
         {isLoading ? (
           <div className="text-center py-4 [font-family:ProtoMono] text-[#0052FF]">
             Loading pool status...
+          </div>
+        ) : error ? (
+          <div className="text-center py-4 [font-family:ProtoMono] text-red-500">
+            Error loading pool status
           </div>
         ) : (
           <>
@@ -59,13 +69,26 @@ export default function PoolModal({ isOpen, onClose }: PoolModalProps) {
             <div className="grid grid-cols-2 gap-4 [font-family:ProtoMono] text-sm">
               <div>
                 <div className="text-gray-500">Pool ID</div>
-                <div>{poolStatus?.poolId?.toString() || '0'}</div>
+                <div>{data?.[0]?.toString() || '0'}</div>
               </div>
               <div>
                 <div className="text-gray-500">Total Numbers</div>
-                <div>{poolStatus?.totalNumbers?.toString() || '0'}</div>
+                <div>{data?.[1]?.toString() || '0'}</div>
               </div>
             </div>
+
+            {conqueredNumbers && conqueredNumbers.length > 0 && (
+              <div className="mt-4">
+                <div className="text-gray-500 mb-2">Previous Conquered Numbers</div>
+                <div className="flex flex-wrap gap-2">
+                  {conqueredNumbers.map((number, index) => (
+                    <span key={index} className="inline-block px-2 py-1 bg-gray-50 border border-[#0052FF] rounded-full text-xs [font-family:ProtoMono] text-[#0052FF]">
+                      #{number.toString()}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

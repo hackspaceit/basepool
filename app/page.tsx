@@ -5,10 +5,9 @@ import {
   useAddFrame,
   useOpenUrl,
 } from "@coinbase/onchainkit/minikit";
-import { Name, Identity, Badge } from "@coinbase/onchainkit/identity";
+import { Name, Identity } from "@coinbase/onchainkit/identity";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Snake from "./components/snake";
-//import BasePool from "./components/basepool";
 import { useAccount } from "wagmi";
 import Check from "./svg/Check";
 
@@ -60,8 +59,8 @@ export default function App() {
   }, [context, handleAddFrame, frameAdded]);
 
   return (
-    <div className="flex flex-col min-h-screen sm:min-h-[820px] font-sans bg-[#E5E5E5] text-black items-center snake-dark relative">
-      <div className="w-screen max-w-[520px]">
+    <div className="flex flex-col h-[100dvh] w-[100dvw] overflow-hidden font-sans bg-[#E5E5E5] text-black items-center snake-dark relative">
+      <div className="w-full max-w-[520px] px-2">
         <header className="mr-2 mt-1 flex justify-between">
           <div className="justify-start pl-1">
             {address ? (
@@ -71,10 +70,6 @@ export default function App() {
                 className="!bg-inherit p-0 [&>div]:space-x-2"
               >
                 <Name className="text-inherit">
-                  <Badge
-                    tooltip="High Scorer"
-                    className="!bg-inherit high-score-badge"
-                  />
                 </Name>
               </Identity>
             ) : (
@@ -102,7 +97,7 @@ export default function App() {
           <button
             type="button"
             className="mt-1 text-[10px] [font-family:ProtoMono] text-black opacity-40 cursor-pointer hover:opacity-70"
-            onClick={() => openUrl("https://basescan.org/address/0xF9f40e4a0d85A5F6aE758E4C40623A62EFC943f3")}
+            onClick={() => openUrl("https://basescan.org/address/0xb40B5ef4c7cd998B5ef1F7aFB34E842F2Dac3A44")}
           >
             Smart Contract verified at BaseScan
           </button>
