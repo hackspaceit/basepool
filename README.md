@@ -2,7 +2,8 @@
 
 BasePool is a provably fair pool game built on Base network using Coinbase's MiniKit for Farcaster integration. Players can participate by sending ETH to get assigned random numbers, with the chance to win the entire pool when it reaches 0.5 ETH.
 
-![BasePool Screenshot](public/preview.png)
+![BasePool Screenshot](https://basepool.miniapps.zone/gitHub.png)
+![BasePool Screenshot](https://basepool.miniapps.zone/miniApp.png)
 
 ## 🎮 How It Works
 
