@@ -1,0 +1,28 @@
+@font-face {
+  font-family: 'Coinbase Display';
+  src: url('/api/fonts/Coinbase_Display-Regular-web-1.32.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Coinbase Display';
+  src: url('/api/fonts/Coinbase_Display-Medium-web-1.32.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Coinbase Display';
+  src: url('/api/fonts/Coinbase_Display-Bold-web-1.32.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ProtoMono';
+  src: url('/fonts/ProtoMono-Regular.otf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+} 
