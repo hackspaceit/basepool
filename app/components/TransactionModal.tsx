@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTransaction, useContractRead } from 'wagmi';
-import { useNotification } from "@coinbase/onchainkit/minikit";
 import { formatEther } from 'viem';
 import ArrowSvg from '../svg/ArrowSvg';
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../lib/contract';
@@ -15,7 +14,6 @@ type TransactionModalProps = {
 };
 
 export default function TransactionModal({ isOpen, onClose, hash, amount, address }: TransactionModalProps) {
-  const notification = useNotification();
   const { data, isError, isLoading } = useTransaction({
     hash: hash || undefined,
   });
