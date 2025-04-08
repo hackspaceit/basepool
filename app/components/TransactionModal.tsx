@@ -4,6 +4,7 @@ import { useNotification } from "@coinbase/onchainkit/minikit";
 import { formatEther } from 'viem';
 import ArrowSvg from '../svg/ArrowSvg';
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../lib/contract';
+import sdk from '@farcaster/frame-sdk';
 
 type TransactionModalProps = {
   isOpen: boolean;
@@ -67,19 +68,28 @@ export default function TransactionModal({ isOpen, onClose, hash, amount, addres
   const threshold = poolStatus?.[3] ? Number(formatEther(poolStatus[3])) : 0.5;
   const progress = (currentBalance / threshold) * 100;
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (!amount) return;
     
-    const numberOfTickets = Number(amount) / 0.0005;
-    notification({
-      title: "🎲 BasePool Participation",
-      body: `Just acquired ${numberOfTickets} numbers in BasePool with ${amount} ETH!\n\n💰 Pool: ${currentBalance.toFixed(4)} ETH\n🎯 Target: ${progress.toFixed(1)}% filled\n\nJoin the pool! 👇\nhttps://basepool.miniapps.zone`
-    }).catch(console.error);
+    try {
+      // Refetch pool data before sharing
+      await refetchPoolStatus();
+      
+      const numberOfTickets = Number(amount) / 0.0005;
+      const text = `🎲 Just got ${numberOfTickets} number${numberOfTickets > 1 ? 's' : ''} in BasePool with ${amount} ETH!\n\n💰 Pool Balance: ${currentBalance.toFixed(4)} ETH\n🎯 Target: ${progress.toFixed(1)}﹪ filled\n\nJoin the pool! 👇`;
+      const linkUrl = "https://basepool.miniapps.zone";
+
+      await sdk.actions.openUrl(
+        `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(linkUrl)}`
+      );
+    } catch (error) {
+      console.error('Error sharing to Warpcast:', error);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <div className="bg-white rounded-lg p-6 w-[90%] max-w-[400px] mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl [font-family:ProtoMono] text-[#0052FF]">Transaction Status</h2>
           <button 

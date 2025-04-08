@@ -22,7 +22,7 @@ export default function WarningModal({ isOpen, onClose }: WarningModalProps) {
         </div>
 
         <div className="text-center [font-family:ProtoMono] text-[#0A0B0D] mb-4">
-          <p>Please connect your wallet to participate in the pool.</p>
+          <p>Please connect your wallet to participate in BasePool.</p>
         </div>
 
         <div className="flex justify-center">

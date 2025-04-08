@@ -19,13 +19,14 @@ import {
   Avatar,
 } from "@coinbase/onchainkit/identity";
 import { useAccount, useWalletClient } from "wagmi";
-import { parseEther } from "viem";
+import { parseEther, formatEther } from "viem";
 import "./basepool.css";
-import { CONTRACT_ADDRESS } from "../lib/contract";
+import { CONTRACT_ADDRESS, CONTRACT_ABI } from "../lib/contract";
 import PoolModal from './PoolModal';
 import WarningModal from './WarningModal';
 import TransactionModal from './TransactionModal';
 import sdk from '@farcaster/frame-sdk';
+import { useContractRead } from "wagmi";
 
 type ControlButtonProps = {
   className?: string;
@@ -103,6 +104,12 @@ export default function BasePool() {
   const [transactionAmount, setTransactionAmount] = useState<string | undefined>();
   const notification = useNotification();
 
+  const { data: poolStatus } = useContractRead({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: 'getPoolStatus'
+  });
+
   const handleTransaction = async (amount: string) => {
     if (!walletClient) {
       setIsWarningOpen(true);
@@ -161,7 +168,11 @@ export default function BasePool() {
 
   const handleShare = async () => {
     try {
-      const text = "🔵 Base Pool, a provable fair pool game 🔵\nFor each 0.0005 eth sent you receive 1 number, when the contract balance reaches 0.5 ETH /pyth generates a random number (0–999) and the balance is sent to the lucky number.\n\nParticipate now! 👇";
+      const currentBalance = poolStatus?.[2] ? Number(formatEther(poolStatus[2])) : 0;
+      const threshold = poolStatus?.[3] ? Number(formatEther(poolStatus[3])) : 0.5;
+      const progress = (currentBalance / threshold) * 100;
+
+      const text = `🔵 Base Pool, a provable fair pool game 🔵\n\n💰 Pool Balance: ${currentBalance.toFixed(4)} ETH\n🎯 Target: ${progress.toFixed(1)}﹪ filled\n\nFor each 0.0005 eth sent you receive 1 number, when the contract balance reaches 0.5 ETH /pyth generates a random number (0–999) and the balance is sent to the lucky number.\n\nParticipate now! 👇`;
       const linkUrl = "https://basepool.miniapps.zone";
 
       await sdk.actions.openUrl(
