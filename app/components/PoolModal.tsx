@@ -2,6 +2,7 @@ import React from 'react';
 import { useContractRead } from 'wagmi';
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../lib/contract';
 import { formatEther } from 'viem';
+import { useAccount } from 'wagmi';
 
 type PoolModalProps = {
   isOpen: boolean;
@@ -9,10 +10,18 @@ type PoolModalProps = {
 };
 
 export default function PoolModal({ isOpen, onClose }: PoolModalProps) {
+  const { address } = useAccount();
   const { data, isLoading, error } = useContractRead({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: 'getPoolStatus'
+  });
+
+  const { data: participantNumbers } = useContractRead({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: 'getParticipantNumbers',
+    args: address ? [address as `0x${string}`] : undefined
   });
 
   const { data: conqueredNumbers } = useContractRead({
@@ -29,7 +38,7 @@ export default function PoolModal({ isOpen, onClose }: PoolModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <div className="bg-white rounded-lg p-6 w-[90%] max-w-[400px] mx-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl [font-family:ProtoMono] text-[#0052FF]">Pool Status</h2>
           <button 
@@ -76,6 +85,22 @@ export default function PoolModal({ isOpen, onClose }: PoolModalProps) {
                 <div>{data?.[1]?.toString() || '0'}</div>
               </div>
             </div>
+
+            {address && participantNumbers && participantNumbers.length > 0 && (
+              <div className="mt-4">
+                <div className="flex justify-between text-sm [font-family:ProtoMono] mb-1">
+                  <span>Your Numbers</span>
+                  <span className="text-[#0052FF]">{participantNumbers.length}</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {participantNumbers.map((number, index) => (
+                    <span key={index} className="inline-block px-2 py-1 bg-gray-50 border border-[#0052FF] rounded-full text-xs [font-family:ProtoMono] text-[#0052FF]">
+                      #{number.toString()}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {conqueredNumbers && conqueredNumbers.length > 0 && (
               <div className="mt-4">
