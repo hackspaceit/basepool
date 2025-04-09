@@ -70,8 +70,9 @@ export default function PoolModal({ isOpen, onClose }: PoolModalProps) {
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <div className="text-right text-xs [font-family:ProtoMono] mt-1">
-                Target: {threshold} ETH
+              <div className="flex justify-between text-xs [font-family:ProtoMono] mt-1">
+                <span>{progress.toFixed(1)}% Filled</span>
+                <span>Target: {threshold} ETH</span>
               </div>
             </div>
 

@@ -184,89 +184,98 @@ export default function BasePool() {
   };
 
   return (
-    <div className="mt-1 mx-2 w-full h-full">
-      <div className="relative origin-top-left w-[96%] h-[72vh] bg-[#0052FF] p-[10px] rounded-lg">
-        <div className="absolute top-[10px] left-[10px] right-[10px] bottom-[10px] w-[calc(100%-20px)] h-[calc(100%-20px)] bg-white rounded-lg z-4 px-3 pt-2 pb-3">
-          <div className="text-center mb-3">
-            <h1 className="text-[#0052FF] text-4xl mb-1 [font-family:ProtoMono] leading-tight">
-              BasePool
-            </h1>
-            <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight">
-            A provable fair pool game.
-            </h2>
-          </div>
+    <div className="w-full h-full overflow-y-auto">
+      <div className="min-h-[530px] w-[100%] mx-auto px-2 py-2 flex flex-col">
+        {/* Main blue container */}
+        <div className="relative bg-[#0052FF] p-[10px] rounded-lg flex-grow">
+          <div className="absolute inset-[10px] bg-white rounded-lg p-4">
+            {/* Header */}
+            <div className="text-center mb-6">
+              <h1 className="text-[#0052FF] text-4xl [font-family:ProtoMono] leading-tight">
+                BasePool
+              </h1>
+              <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight">
+                A provable fair pool game.
+              </h2>
+            </div>
 
-          <div className="text-[#0A0B0D] text-base [font-family:ProtoMono] leading-snug mb-4">
-            <p className="flex items-start mb-2">
-              <span className="mr-2">🔵</span>
-              <span>For each 0.0005 ETH sent you receive 1 number.</span>
-            </p>
-            <p className="flex items-start mb-2">
-              <span className="mr-2">🔵</span>
-              <span>At 0.5 balance, Pyth Network generates a random number (0–999)</span>
-            </p>
-            <p className="flex items-start mb-2">
-              <span className="mr-2">🔵</span>
-              <span>Selected number receives the contract balance.</span>
-            </p>
-            <p className="flex items-start">
-              <span className="mr-2">🔵</span>
-              <span>A new pool starts!</span>
-            </p>
-          </div>
-          <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight text-center">
-          👇🏻 Send ETH 👇🏻
-            </h2>
-          &nbsp; 
-          <div className="grid grid-cols-2 gap-2 max-w-xl mx-auto px-2">
-            <PillButton 
-              numbers="1 Number"
-              eth="0.0005 ETH"
-              onClick={() => handleTransaction("0.0005")}
-            />
-            <PillButton 
-              numbers="3 Numbers"
-              eth="0.0015 ETH"
-              onClick={() => handleTransaction("0.0015")}
-            />
-            <PillButton 
-              numbers="5 Numbers"
-              eth="0.0025 ETH"
-              onClick={() => handleTransaction("0.0025")}
-            />
-            <PillButton 
-              numbers="10 Numbers"
-              eth="0.005 ETH"
-              onClick={() => handleTransaction("0.005")}
-            />
+            {/* Game explanation and Send ETH buttons */}
+            <div className="text-[#0A0B0D] text-base [font-family:ProtoMono] leading-snug">
+              <p className="flex items-start mb-1">
+                <span className="mr-2">🔵</span>
+                <span>Receive 1 number for each 0.0005 ETH sent to CA.</span>
+              </p>
+              <p className="flex items-start mb-1">
+                <span className="mr-2">🔵</span>
+                <span>At 0.5 balance, Pyth Network generates a random number.</span>
+              </p>
+              <p className="flex items-start mb-1">
+                <span className="mr-2">🔵</span>
+                <span>Selected number receives the CA balance.</span>
+              </p>
+              <p className="flex items-start mb-2">
+                <span className="mr-2">🔵</span>
+                <span>A new pool starts!</span>
+              </p>
+
+              <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight text-center mb-3">
+                👇🏻 Send ETH 👇🏻
+              </h2>
+              <div className="grid grid-cols-2 gap-2 max-w-xl mx-auto mb-8">
+                <PillButton 
+                  numbers="1 Number"
+                  eth="0.0005 ETH"
+                  onClick={() => handleTransaction("0.0005")}
+                />
+                <PillButton 
+                  numbers="3 Numbers"
+                  eth="0.0015 ETH"
+                  onClick={() => handleTransaction("0.0015")}
+                />
+                <PillButton 
+                  numbers="5 Numbers"
+                  eth="0.0025 ETH"
+                  onClick={() => handleTransaction("0.0025")}
+                />
+                <PillButton 
+                  numbers="10 Numbers"
+                  eth="0.005 ETH"
+                  onClick={() => handleTransaction("0.005")}
+                />
+              </div>
+              <button
+            type="button"
+            className="w-full mt-1 text-[10px] [font-family:ProtoMono] text-black opacity-40 cursor-pointer hover:opacity-70 text-center"
+            onClick={() => window.open("https://basescan.org/address/0xb40B5ef4c7cd998B5ef1F7aFB34E842F2Dac3A44", "_blank")}
+          >
+            Smart Contract verified at BaseScan
+          </button> 
+            </div>
+
+
+
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-x-4 mt-3">
-        <div className="flex justify-center">
-          <ControlButton onClick={() => handleShare()} className="block" />
-        </div>
-        <div className="flex justify-center">
-          <ControlButton onClick={() => setIsModalOpen(true)} className="block" />
-        </div>
-        <div className="flex justify-center">
-          <WalletControl />
-        </div>
-
-        <div className="flex justify-center pt-4">
-          <span className="text-sm [font-family:ProtoMono] text-[#0052FF]">Share</span>
-        </div>
-        <div className="flex justify-center pt-4">
-          <span className="text-sm [font-family:ProtoMono] text-[#0052FF]">Pool Status</span>
-        </div>
-        <div className="flex justify-center pt-4">
-          <span className="text-sm [font-family:ProtoMono] text-[#0052FF]">
-            {address ? "Logout" : "Login"}
-          </span>
-        </div>
-        
-      </div>
+                  {/* Control buttons */}
+                  <div className="grid grid-cols-3 gap-x-4">
+              <div className="flex flex-col items-center">
+                <ControlButton onClick={() => handleShare()} className="block mb-4" />
+                <span className="text-xs [font-family:ProtoMono] text-[#0052FF]">Share</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <ControlButton onClick={() => setIsModalOpen(true)} className="block mb-4" />
+                <span className="text-xs [font-family:ProtoMono] text-[#0052FF]">Pool Status</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <WalletControl />
+                <span className="text-xs [font-family:ProtoMono] text-[#0052FF] mt-4">
+                  {address ? "Disconnect" : "Connect Wallet"}
+                </span>
+              </div>
+              
+            </div>
 
       <PoolModal 
         isOpen={isModalOpen} 

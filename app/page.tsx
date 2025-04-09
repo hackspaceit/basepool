@@ -60,7 +60,15 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-[100dvh] w-[100dvw] overflow-hidden font-sans bg-[#E5E5E5] text-black items-center snake-dark relative">
-      <div className="w-full max-w-[520px] px-2">
+      <div 
+        style={{
+          marginTop: context?.client?.safeAreaInsets?.top || 0,
+          marginBottom: context?.client?.safeAreaInsets?.bottom || 0,
+          marginLeft: context?.client?.safeAreaInsets?.left || 0,
+          marginRight: context?.client?.safeAreaInsets?.right || 0,
+        }}
+        className="w-full max-w-[520px] px-2"
+      >
         <header className="mr-2 mt-1 flex justify-between">
           <div className="justify-start pl-1">
             {address ? (
@@ -94,13 +102,13 @@ export default function App() {
           >
             BUILT ON BASE WITH MINIKIT
           </button>
-          <button
+{/*           <button
             type="button"
             className="mt-1 text-[10px] [font-family:ProtoMono] text-black opacity-40 cursor-pointer hover:opacity-70"
             onClick={() => openUrl("https://basescan.org/address/0xb40B5ef4c7cd998B5ef1F7aFB34E842F2Dac3A44")}
           >
             Smart Contract verified at BaseScan
-          </button>
+          </button> */}
         </footer>
       </div>
     </div>
