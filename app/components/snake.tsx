@@ -185,17 +185,17 @@ export default function BasePool() {
 
   return (
     <div className="w-full h-full overflow-y-auto">
-      <div className="min-h-[530px] w-[100%] mx-auto px-2 py-2 flex flex-col">
+      <div className="min-h-[510px] w-[100%] mx-auto px-2 py-2 flex flex-col">
         {/* Main blue container */}
         <div className="relative bg-[#0052FF] p-[10px] rounded-lg flex-grow">
           <div className="absolute inset-[10px] bg-white rounded-lg p-4">
             {/* Header */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-2">
               <h1 className="text-[#0052FF] text-4xl [font-family:ProtoMono] leading-tight">
                 BasePool
               </h1>
               <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight">
-                A provable fair pool game.
+                A provable fair game.
               </h2>
             </div>
 
@@ -221,7 +221,7 @@ export default function BasePool() {
               <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight text-center mb-3">
                 👇🏻 Send ETH 👇🏻
               </h2>
-              <div className="grid grid-cols-2 gap-2 max-w-xl mx-auto mb-8">
+              <div className="grid grid-cols-2 gap-2 max-w-xl mx-auto mb-2">
                 <PillButton 
                   numbers="1 Number"
                   eth="0.0005 ETH"
@@ -261,17 +261,25 @@ export default function BasePool() {
                   {/* Control buttons */}
                   <div className="grid grid-cols-3 gap-x-4">
               <div className="flex flex-col items-center">
-                <ControlButton onClick={() => handleShare()} className="block mb-4" />
-                <span className="text-xs [font-family:ProtoMono] text-[#0052FF]">Share</span>
+                <ControlButton onClick={() => handleShare()} className="block mb-2" />
+                <span className="text-s [font-family:ProtoMono] text-[#0052FF] text-center">Share<br/>Frame</span>
               </div>
               <div className="flex flex-col items-center">
-                <ControlButton onClick={() => setIsModalOpen(true)} className="block mb-4" />
-                <span className="text-xs [font-family:ProtoMono] text-[#0052FF]">Pool Status</span>
+                <ControlButton onClick={() => setIsModalOpen(true)} className="block mb-2" />
+                <span className="text-s [font-family:ProtoMono] text-[#0052FF] text-center">Pool<br/>Status</span>
               </div>
               <div className="flex flex-col items-center">
-                <WalletControl />
-                <span className="text-xs [font-family:ProtoMono] text-[#0052FF] mt-4">
-                  {address ? "Disconnect" : "Connect Wallet"}
+                <div className="block mb-2">
+                  <WalletControl />
+                </div>
+                <span className="text-s [font-family:ProtoMono] text-[#0052FF] text-center">
+                  {address ? (
+                    "Disconnect"
+                  ) : (
+                    <>
+                      Connect<br/>Wallet
+                    </>
+                  )}
                 </span>
               </div>
               

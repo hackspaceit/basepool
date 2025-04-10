@@ -102,13 +102,7 @@ export default function App() {
           >
             BUILT ON BASE WITH MINIKIT
           </button>
-{/*           <button
-            type="button"
-            className="mt-1 text-[10px] [font-family:ProtoMono] text-black opacity-40 cursor-pointer hover:opacity-70"
-            onClick={() => openUrl("https://basescan.org/address/0xb40B5ef4c7cd998B5ef1F7aFB34E842F2Dac3A44")}
-          >
-            Smart Contract verified at BaseScan
-          </button> */}
+
         </footer>
       </div>
     </div>
