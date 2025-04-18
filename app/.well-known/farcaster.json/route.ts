@@ -16,7 +16,7 @@ export async function GET() {
       buttonTitle: `Launch ${process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME}`,
       splashImageUrl: process.env.NEXT_PUBLIC_SPLASH_IMAGE_URL,
       splashBackgroundColor: `#${process.env.NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR}`,
-      webhookUrl: `${URL}/api/webhook`,
+      webhookUrl: `https://api.neynar.com/f/app/2b8b88b6-594d-4b0c-ae23-67684694b621/event`,
     },
   });
 }

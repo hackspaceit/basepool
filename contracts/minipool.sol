@@ -2,8 +2,8 @@
 pragma solidity 0.8.28;
 
 /**
- * BasePool 0.2
- * miniapp de Farcaster que usa Pyth Network para generación de numeros aleatorios
+ * MiniPool
+ * Igual que BasePool pero con 0.1 ETH como objetivo
  * basado en ApeBomb de 0xQuit
  * https://x.com/0xQuit
  * https://apescan.io/address/0xC1932844eDcc3193ae2622089c4B57ae5F023D7f
@@ -53,15 +53,14 @@ contract BasePool is IEntropyConsumer, Ownable {
 
     uint256 public currentPoolId;
     uint256 public emergencyWithdrawTimestamp;
-    address private immutable FEE_WALLET;
 
     uint256 private constant ENTRY_COST = 0.0005 ether;
-    uint256 private constant POOL_TARGET = 0.5 ether; // 1000 números * 0.0005 ETH
-    uint256 public constant FEE_RATE = 50; // 5%
+    uint256 private constant POOL_TARGET = 0.1 ether; // 1000 números * 0.0005 ETH
+    uint256 public constant FEE_RATE = 100;
+    address public immutable RECEIVER = 0x0000000000000000000000000000000000000000; // A definir
 
     constructor(address _feeReceiver) {
-        FEE_RECEIVER = _feeReceiver;
-        FEE_WALLET = msg.sender;
+        RECEIVER = _feeReceiver;   
     }
 
     // asignamos un número al participar
@@ -241,8 +240,8 @@ contract BasePool is IEntropyConsumer, Ownable {
     }
 }
 /**
- * BasePool 0.2
- * miniapp de Farcaster que usa Pyth Network para generación de numeros aleatorios
+ * MiniPool
+ * Igual que BasePool pero con 0.1 ETH como objetivo
  * basado en ApeBomb de 0xQuit
  * https://x.com/0xQuit
  * https://apescan.io/address/0xC1932844eDcc3193ae2622089c4B57ae5F023D7f

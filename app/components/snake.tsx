@@ -19,7 +19,7 @@ import {
   Avatar,
 } from "@coinbase/onchainkit/identity";
 import { useAccount, useWalletClient } from "wagmi";
-import { parseEther, formatEther } from "viem";
+import { parseEther } from "viem";
 import "./basepool.css";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "../lib/contract";
 import PoolModal from './PoolModal';
@@ -168,11 +168,14 @@ export default function BasePool() {
 
   const handleShare = async () => {
     try {
-      const currentBalance = poolStatus?.[2] ? Number(formatEther(poolStatus[2])) : 0;
-      const threshold = poolStatus?.[3] ? Number(formatEther(poolStatus[3])) : 0.5;
-      const progress = (currentBalance / threshold) * 100;
+      const text = `🔵 Base Pool — fair onchain game
+🏆 Prize: 0.5 ETH
+💸 0.0005 ETH = 1 number
+🎲 At 0.5 ETH, /pyth draws a random number between 0-999
+🍀 Lucky number receives contract balance
+♻️ New round starts same way
 
-      const text = `🔵 Base Pool, a provable fair pool game 🔵\n\n💰 Pool Balance: ${currentBalance.toFixed(4)} ETH\n🎯 Target: ${progress.toFixed(1)}﹪ filled\n\nFor each 0.0005 eth sent you receive 1 number, when the contract balance reaches 0.5 ETH /pyth generates a random number (0–999) and the balance is sent to the lucky number.\n\nParticipate now! 👇`;
+🎟️ Numbers sold: ${poolStatus?.[1] || 0} / 1000`;
       const linkUrl = "https://basepool.miniapps.zone";
 
       await sdk.actions.openUrl(
