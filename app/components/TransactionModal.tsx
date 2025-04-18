@@ -74,7 +74,7 @@ export default function TransactionModal({ isOpen, onClose, hash, amount, addres
       await refetchPoolStatus();
       
       const numberOfTickets = Number(amount) / 0.0005;
-      const text = `🎲 Just got ${numberOfTickets} number${numberOfTickets > 1 ? 's' : ''} in BasePool with ${amount} ETH!\n\n💰 Pool Balance: ${currentBalance.toFixed(4)} ETH\n🎯 Target: ${progress.toFixed(1)}﹪ filled\n\nJoin the pool! 👇`;
+      const text = `I just bought ${numberOfTickets} ticket${numberOfTickets > 1 ? 's' : ''} for Base Pool, a fair on chain game\n\n🏆 Prize: 0.5 ETH\n💰 Pool Balance: ${currentBalance.toFixed(4)} ETH\n🎟️ Tickets sold: ${poolStatus?.[1] || 0} / 1000\n\nBuy your tickets and join Base Pool 👇`;
       const linkUrl = "https://basepool.miniapps.zone";
 
       await sdk.actions.openUrl(
