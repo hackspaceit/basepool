@@ -27,6 +27,7 @@ import WarningModal from './WarningModal';
 import TransactionModal from './TransactionModal';
 import sdk from '@farcaster/frame-sdk';
 import { useContractRead } from "wagmi";
+import DescriptionModal from './DescriptionModal';
 
 type ControlButtonProps = {
   className?: string;
@@ -100,6 +101,7 @@ export default function BasePool() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const [transactionHash, setTransactionHash] = useState<`0x${string}` | undefined>();
   const [transactionAmount, setTransactionAmount] = useState<string | undefined>();
   const notification = useNotification();
@@ -117,46 +119,56 @@ export default function BasePool() {
     }
 
     try {
-      // Verificar si estamos en la red Base (chainId: 8453)
+      // Verificar red Base
       const chainId = await walletClient.getChainId();
       if (chainId !== 8453) {
-        // Solicitar cambio a Base
         try {
           await walletClient.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x2105' }], // 8453 en hexadecimal
+            params: [{ chainId: '0x2105' }],
           });
-          return; // La transacción se reiniciará cuando la red cambie
+          // Esperar a que la red cambie
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Reiniciar la transacción después del cambio de red
+          return handleTransaction(amount);
         } catch (switchError) {
           console.error('Error switching to Base:', switchError);
           return;
         }
       }
 
-      // Primero intentamos enviar la transacción
+      // Enviar transacción
       const tx = await walletClient.sendTransaction({
         to: CONTRACT_ADDRESS,
         value: parseEther(amount),
       });
 
-      // Solo si la transacción fue enviada exitosamente, actualizamos el estado
+      if (!tx) {
+        throw new Error('Transaction failed');
+      }
+
       setTransactionAmount(amount);
       setTransactionHash(tx);
       setIsTransactionModalOpen(true);
 
-      if (tx) {
-        const numberOfTickets = Number(amount) / 0.0005;
-        
-        setTimeout(() => {
-          notification({
-            title: "🎲 BasePool Participation",
-            body: `Just acquired ${numberOfTickets} numbers in BasePool with ${amount} ETH!\n\n💰 Pool: 0.5 ETH\n🎯 Target: ${(Number(amount) / 0.5 * 100).toFixed(1)}% filled\n\nJoin the pool! 👇\nhttps://basepool.miniapps.zone`
-          }).catch(console.error);
-        }, 1000);
+      const numberOfTickets = Number(amount) / 0.0005;
+      
+      // Enviar notificación inmediatamente
+      try {
+        await notification({
+          title: "🎲 BasePool Participation",
+          body: `Just acquired ${numberOfTickets} numbers in BasePool with ${amount} ETH!\n\n💰 Pool: 0.5 ETH\n🎯 Target: ${(Number(amount) / 0.5 * 100).toFixed(1)}% filled\n\nJoin the pool! 👇\nhttps://basepool.miniapps.zone`
+        });
+      } catch (notifError) {
+        console.error('Error sending notification:', notifError);
       }
     } catch (error) {
       console.error('Transaction error:', error);
-      // No abrimos el modal si hay un error en la transacción
+      // Mostrar error al usuario
+      notification({
+        title: "❌ Transaction Failed",
+        body: "Please try again. If the problem persists, check your wallet settings."
+      }).catch(console.error);
     }
   };
 
@@ -190,58 +202,63 @@ export default function BasePool() {
     <div className="w-full h-full overflow-y-auto">
       <div className="min-h-[510px] w-[100%] mx-auto px-2 py-2 flex flex-col">
         {/* Main blue container */}
-        <div className="relative bg-[#0052FF] p-[10px] rounded-lg flex-grow">
-          <div className="absolute inset-[10px] bg-white rounded-lg p-4">
+        <div className="relative bg-[#0052FF] p-[2px] rounded-lg flex-grow">
+          <div className="absolute inset-[4px] bg-white rounded-lg p-2">
             {/* Header */}
-            <div className="text-center mb-2">
+            <div className="text-center mb-3">
               <h1 className="text-[#0052FF] text-4xl [font-family:ProtoMono] leading-tight">
                 BasePool
               </h1>
-              <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight">
+              <h2 
+                className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight p-1 cursor-pointer hover:opacity-80"
+                onClick={() => setIsDescriptionModalOpen(true)}
+              >
                 A provable fair game.
+              </h2>
+              <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight">
+                🏆 Prize: 0.5 ETH 🏆
               </h2>
             </div>
 
             {/* Game explanation and Send ETH buttons */}
             <div className="text-[#0A0B0D] text-base [font-family:ProtoMono] leading-snug">
               <p className="flex items-start mb-1">
-                <span className="mr-2">🔵</span>
-                <span>Receive 1 number for each 0.0005 ETH sent to CA.</span>
+                <span>💸 0.0005 ETH each ticket.</span>
               </p>
               <p className="flex items-start mb-1">
-                <span className="mr-2">🔵</span>
-                <span>At 0.5 balance, Pyth Network generates a random number.</span>
+                <span>🎟️ Pool target = 1,000 tickets.</span>
               </p>
               <p className="flex items-start mb-1">
-                <span className="mr-2">🔵</span>
-                <span>Selected number receives the CA balance.</span>
+                <span>🎲 /pyth draws a random number.</span>
+              </p>
+              <p className="flex items-start mb-1">
+                <span>🍀 Lucky number receives CA balance.</span>
               </p>
               <p className="flex items-start mb-2">
-                <span className="mr-2">🔵</span>
-                <span>A new pool starts!</span>
+                <span>♻️ New pool starts, same rules.</span>
               </p>
 
               <h2 className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight text-center mb-3">
-                👇🏻 Send ETH 👇🏻
+                👇🏻 Buy Tickets 👇🏻
               </h2>
               <div className="grid grid-cols-2 gap-2 max-w-xl mx-auto mb-2">
                 <PillButton 
-                  numbers="1 Number"
+                  numbers="1 Ticket"
                   eth="0.0005 ETH"
                   onClick={() => handleTransaction("0.0005")}
                 />
                 <PillButton 
-                  numbers="3 Numbers"
+                  numbers="3 Tickets"
                   eth="0.0015 ETH"
                   onClick={() => handleTransaction("0.0015")}
                 />
                 <PillButton 
-                  numbers="5 Numbers"
+                  numbers="5 Tickets"
                   eth="0.0025 ETH"
                   onClick={() => handleTransaction("0.0025")}
                 />
                 <PillButton 
-                  numbers="10 Numbers"
+                  numbers="10 Tickets"
                   eth="0.005 ETH"
                   onClick={() => handleTransaction("0.005")}
                 />
@@ -253,6 +270,12 @@ export default function BasePool() {
           >
             Smart Contract verified at BaseScan
           </button> 
+          <h2 
+                className="text-[#0052FF] text-xl [font-family:ProtoMono] leading-tight text-center mb-3 cursor-pointer hover:opacity-80"
+                onClick={() => setIsDescriptionModalOpen(true)}
+              >
+                 Full Description / FAQ
+              </h2>
             </div>
 
 
@@ -302,6 +325,10 @@ export default function BasePool() {
         hash={transactionHash}
         amount={transactionAmount}
         address={address}
+      />
+      <DescriptionModal 
+        isOpen={isDescriptionModalOpen}
+        onClose={() => setIsDescriptionModalOpen(false)}
       />
     </div>
   );
